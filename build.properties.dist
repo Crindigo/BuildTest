@@ -1,0 +1,21 @@
+# path to MCP folder
+dir.mcp=/path/to/mcp
+
+# shared and release folders for the result jar files
+dir.share=shared
+dir.release=release
+
+# top level package name, should be specific (no "com", "net", etc.)
+dir.package=username
+
+# full path to your multimc instance folder
+dir.multimc.instance=/path/to/multimc/instances/instanceName
+
+# short name of the mod (will be named "shortname-universal-version.jar")
+mod.shortname=foobar
+
+# version of the mod
+mod.version=1.0.0
+
+# version of minecraft this is being compiled for
+minecraft.version=1.4.5

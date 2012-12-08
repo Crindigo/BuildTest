@@ -1,0 +1,88 @@
+<?xml version="1.0" ?> 
+<project name="BuildTest" default="build">
+	
+	<property file="build.properties" />
+	
+	<target name="clean">
+		<delete file="${dir.mcp}/src/common/mcmod.info" />
+		<delete dir="${dir.mcp}/src/common/${dir.package}" />
+		<delete dir="${dir.mcp}/reobf/minecraft" />
+	</target>
+	
+	<target name="build">
+		<copy todir="${dir.mcp}/src/common">
+			<fileset dir="${basedir}/client" />
+			<fileset dir="${basedir}/common" />
+		</copy>
+		<replace dir="${dir.mcp}/src/common" token="@VERSION@" value="${mod.version}" />
+	</target>
+	
+	<target name="recompile">
+		<exec dir="${dir.mcp}" executable="cmd" os="Windows 7">
+			<arg line="/c recompile.bat" />
+		</exec>
+		<exec dir="${dir.mcp}" executable="bash" os="Linux">
+			<arg line="recompile.sh" />
+		</exec>
+		<exec dir="${dir.mcp}" executable="bash" os="Mac OS X">
+			<arg line="recompile.sh" />
+		</exec>
+	</target>
+	
+	<target name="reobfuscate">
+		<exec dir="${dir.mcp}" executable="cmd" os="Windows 7">
+			<arg line="/c reobfuscate.bat" />
+		</exec>
+		<exec dir="${dir.mcp}" executable="bash" os="Linux">
+			<arg line="reobfuscate.sh" />
+		</exec>
+		<exec dir="${dir.mcp}" executable="bash" os="Mac OS X">
+			<arg line="reobfuscate.sh" />
+		</exec>
+	</target>
+	
+	<target name="release-shared">
+		<!-- Prep for the release -->
+		<antcall target="clean" />
+		<antcall target="build" />
+		<antcall target="recompile" />		
+		<antcall target="reobfuscate" />
+		
+		<!-- Build the jar -->
+		<mkdir dir="${dir.share}/${minecraft.version}" />
+		<jar destfile="${dir.share}/${minecraft.version}/${mod.shortname}-universal-${mod.version}.jar">
+			<fileset dir="${dir.mcp}/src/common" includes="mcmod.info" />
+			<fileset dir="${dir.mcp}/reobf/minecraft" />
+			<fileset dir="${basedir}/resources" />
+		</jar>
+		
+		<!-- Clean up the MCP source now that we are done -->
+		<antcall target="clean" />
+	</target>
+	
+	<target name="release">
+		<!-- Prep for the release -->
+		<antcall target="clean" />
+		<antcall target="build" />
+		<antcall target="recompile" />		
+		<antcall target="reobfuscate" />
+		
+		<!-- Build the jar -->
+		<mkdir dir="${dir.release}/${minecraft.version}" />
+		<jar destfile="${dir.release}/${minecraft.version}/${mod.shortname}-universal-${mod.version}.jar">
+			<fileset dir="${dir.mcp}/src/common" includes="mcmod.info" />
+			<fileset dir="${dir.mcp}/reobf/minecraft" />
+			<fileset dir="${basedir}/resources" />
+		</jar>
+		
+		<!-- Clean up the MCP source now that we are done -->
+		<antcall target="clean" />
+	</target>
+
+    <target name="multimc">
+		<copy todir="${dir.multimc.instance}/minecraft/mods">
+			<fileset dir="${dir.release}/${minecraft.version}" includes="${mod.shortname}-universal-${mod.version}.jar" />
+        </copy>
+    </target>
+	
+</project>
